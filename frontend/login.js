@@ -54,7 +54,7 @@ loginForm.addEventListener('submit', async (e) => {
             // --- THE REDIRECT FIX ---
             // Send the user to the SHELL, which contains the music player and sidebar
             // Make sure the path to shell/app.html is correct relative to login.html
-            window.location.href = 'appmusic/index.html'; 
+            window.location.href = 'index.html'; 
         }
     } catch (err) {
         console.error("Critical error:", err);

@@ -1,4 +1,10 @@
 /* --- LAYOUT --- */
+/* Hide everything inside the body until we verify the user */
+body {
+    visibility: hidden;
+    background-color: #0f172a; /* Match your theme so there's no white flash */
+}
+
 body, html {
     margin: 0; padding: 0;
     height: 100%; width: 100%;

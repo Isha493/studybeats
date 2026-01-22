@@ -51,18 +51,17 @@ connectToCloud();
         const currentPage = path.split("/").pop();
 
         // Whitelist pages that DON'T need a login
-        // Added path === '/' to correctly identify the home page on Vercel
+        // Note: index.html removed so it's now protected!
         const isAuthPage = 
             currentPage === 'login.html' || 
-            currentPage === 'signup.html' || 
-            currentPage === 'index.html' || 
-            currentPage === '' || 
-            path === '/';
+            currentPage === 'signup.html';
 
         if (!session && !isAuthPage) {
             console.log("No active session found. Protecting page...");
-            // Use absolute path '/login.html' so it works from subfolders like /timer or /todo
             window.location.href = '/login.html';
+        } else {
+            // If logged in OR on a login page, make the body visible
+            document.body.style.visibility = "visible";
         }
     };
     authCheck();

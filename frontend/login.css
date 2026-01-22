@@ -7,13 +7,15 @@
 }
 
 body {
-    background-color: #121212; /* Deep Charcoal */
+    background-color: #121212; /* Deep Charcoal kept */
     height: 100vh;
+    min-height: 100svh; /* Added: Ensures true center on mobile browsers */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     color: #ffffff;
+    width: 100%; /* Added: Ensures body doesn't exceed screen */
 }
 
 /* Background Glow Elements */
@@ -22,6 +24,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
+    overflow: hidden; /* Added: Clips the circles so they don't cause swiping */
 }
 
 .circle {
@@ -65,6 +68,7 @@ body {
     max-width: 420px;
     text-align: center;
     animation: fadeIn 0.8s ease-out;
+    margin: auto; /* Added: Extra insurance for centering */
 }
 
 .logo {
@@ -176,7 +180,12 @@ input:focus {
 /* Responsive Scaling */
 @media (max-width: 480px) {
     .login-box {
-        width: 90%;
+        width: 90% !important; /* Fixed: Ensures centering on small screens */
         padding: 40px 25px;
+        max-width: none;
+    }
+    
+    .logo {
+        font-size: 2rem;
     }
 }

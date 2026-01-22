@@ -1,8 +1,7 @@
 /* --- LAYOUT --- */
-/* Hide everything inside the body until we verify the user */
 body {
     visibility: hidden;
-    background-color: #0f172a; /* Match your theme so there's no white flash */
+    background-color: #0f172a; 
 }
 
 body, html {
@@ -46,7 +45,6 @@ body, html {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Logo Styling */
 .sidebar-logo {
     color: white;
     font-size: 1.5rem;
@@ -86,7 +84,7 @@ body, html {
 }
 
 /* MAIN CONTENT */
-.main-container { width: 100vw; height: 100vh; background: #000; }
+.main-container { width: 100vw; height: 100vh; background: #000; overflow: hidden; }
 #mainIframe { width: 100%; height: 100%; border: none; }
 
 /* --- FIXED MUSIC PLAYER UI --- */
@@ -100,7 +98,7 @@ body, html {
     border: 1px solid rgba(29, 185, 84, 0.3);
     border-radius: 20px;
     padding: 15px;
-    display: flex; /* Initialized as flex */
+    display: flex; 
     align-items: center;
     gap: 15px;
     z-index: 10000;
@@ -114,10 +112,7 @@ body, html {
     font-size: 18px; cursor: pointer;
 }
 
-.disc-container {
-    width: 50px; height: 50px;
-}
-
+.disc-container { width: 50px; height: 50px; }
 .disc-icon {
     font-size: 45px;
     color: #1db954;
@@ -152,64 +147,39 @@ body, html {
     display: flex; align-items: center; justify-content: center;
 }
 
-/* --- MOBILE RESPONSIVENESS (Screens smaller than 768px) --- */
+/* --- MOBILE RESPONSIVENESS --- */
 @media screen and (max-width: 768px) {
-    
-    /* 1. Adjust the Sidebar for Mobile */
     .sidebar {
-        width: 80%; /* Takes up most of the screen when open */
+        width: 80%; 
         max-width: 300px;
     }
 
-    /* 2. Make the Music Player smaller and centered */
     #musicBlock {
-        width: calc(100% - 40px); /* Full width minus margins */
-        left: 20px;
-        right: 20px;
-        bottom: 20px;
-        padding: 12px;
-        gap: 10px;
+        /* FIX: Center player on mobile within screen bounds */
+        width: calc(100% - 30px); 
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        padding: 10px;
     }
 
-    .disc-container {
-        width: 40px;
-        height: 40px;
-    }
-
-    .disc-icon {
-        font-size: 35px;
-    }
-
-    #nowPlaying {
-        font-size: 0.75rem;
-    }
-
-    /* 3. Hide Sidebar Text for very small screens if needed */
-    .nav-item span {
-        font-size: 0.9rem;
-    }
-
-    /* 4. Fix Iframe scrolling issues on mobile */
     .main-container {
         -webkit-overflow-scrolling: touch;
     }
 }
 
-/* --- OPTIONAL: Handle Sidebar Toggle for Mobile --- */
-/* Add this class via JS when the menu button is clicked */
 .sidebar.mobile-open {
     transform: translateX(0) !important;
     opacity: 1 !important;
-    pointer-events: auto !important;
 }
 
 #menuTrigger {
     position: fixed;
     top: 15px;
-    left: 8px; /* If this is larger than 15, it will hit the logo */
+    left: 8px;
     z-index: 9999;
 }
 
 #sidebar {
-    z-index: 10000 !important; /* This ensures the menu itself slides over the sub-pages */
+    z-index: 10000 !important;
 }

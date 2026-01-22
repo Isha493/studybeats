@@ -1,0 +1,108 @@
+/* Matching your Login aesthetic */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0c0c0e;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Background Circles */
+.background-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+}
+
+.circle-1 {
+    width: 300px; height: 300px;
+    background: #7000ff;
+    top: -50px; left: -50px;
+}
+
+.circle-2 {
+    width: 400px; height: 400px;
+    background: #00d4ff;
+    bottom: -100px; right: -100px;
+}
+
+/* Signup Card */
+.signup-box {
+    background: rgba(22, 22, 26, 0.8);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #1f1f23;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.logo { font-size: 2rem; margin-bottom: 5px; }
+.logo span { color: #7000ff; }
+.tagline { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+
+/* Form Fields */
+.input-group { margin-bottom: 15px; }
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: #1a1a1d;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    border-color: #7000ff;
+    outline: none;
+    box-shadow: 0 0 10px rgba(112, 0, 255, 0.3);
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-signup-action {
+    background: #7000ff;
+    color: white;
+    box-shadow: 0 0 15px rgba(112, 0, 255, 0.4);
+}
+
+.btn-signup-action:hover {
+    background: #8a2be2;
+    transform: scale(1.02);
+}
+
+.btn-back {
+    background: transparent;
+    color: #888;
+    border: 1px solid #333;
+}
+
+.btn-back:hover {
+    color: #fff;
+    border-color: #fff;
+}

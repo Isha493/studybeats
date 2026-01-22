@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Timer | StudyBeats</title>
+    <link rel="stylesheet" href="timer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="circle circle-1"></div>
+    </div>
+
+    <nav class="top-bar">
+        <div class="nav-content">
+            <h1 class="logo" onclick="location.href='../profile/profile.html'">Study<span>Beats</span></h1>
+            <div id="liveClock" class="clock">00:00:00</div>
+        </div>
+    </nav>
+
+    <main class="timer-container">
+        <div class="timer-card">
+            <div class="timer-display">
+                <svg class="progress-ring" width="300" height="300">
+                    <circle class="progress-ring__circle-bg" stroke="#222" stroke-width="8" fill="transparent" r="140" cx="150" cy="150"/>
+                    <circle id="progressCircle" class="progress-ring__circle" stroke="#1db954" stroke-width="8" fill="transparent" r="140" cx="150" cy="150"/>
+                </svg>
+                <div class="time-text">
+                    <h1 id="timerDisplay">25:00</h1>
+                    <p id="timerStatus">Ready to focus?</p>
+                </div>
+            </div>
+
+            <div class="timer-controls">
+                <button id="startBtn" class="ctrl-btn main-btn"><i class="fas fa-play"></i> Start</button>
+                <button id="pauseBtn" class="ctrl-btn" style="display:none;"><i class="fas fa-pause"></i> Pause</button>
+                <button id="resetBtn" class="ctrl-btn"><i class="fas fa-redo"></i> Reset</button>
+            </div>
+
+            <div class="duration-presets">
+                <button onclick="setTimer(15)">15m</button>
+                <button class="active" onclick="setTimer(25)">25m</button>
+                <button onclick="setTimer(50)">50m</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="global.js"></script>
+    <script src="timer-script.js"></script>
+</body>
+</html>

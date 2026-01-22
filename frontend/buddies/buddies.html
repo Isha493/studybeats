@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBeats | Network</title>
+    <link rel="stylesheet" href="buddies-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+
+    <nav class="glass-nav">
+        <div class="nav-content-wrapper">
+            <div class="nav-left">
+                <h1 class="logo" onclick="location.href='../dashboard/dashboard.html'">Study<span>Beats</span></h1>
+                <div class="separator"></div>
+                <div class="network-status">
+                    <div class="pulse-dot"></div>
+                    <span id="statusText">SYSTEM_READY</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="status-pill">
+                    <i class="fas fa-link"></i>
+                    <span id="onlineCount">0</span> 
+                    <span class="pill-label">UPLINKS_ACTIVE</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="network-container">
+        <div class="action-bar">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="buddySearch" placeholder="Find user by ID or Username...">
+            </div>
+            <button id="addFriendBtn" class="neon-btn">ADD_BUDDY</button>
+        </div>
+
+        <div class="workspace-layout">
+            <section class="feed-section">
+                <div class="label-row">
+                    <span><i class="fas fa-broadcast-tower"></i> LIVE_STREAM_SESSIONS</span>
+                </div>
+                <div id="liveBuddiesList" class="buddies-feed">
+                    <div class="buddy-tile empty-tile">
+                        <p>No active uplinks detected in your network.</p>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="chat-terminal">
+                <div class="terminal-header">
+                    <span><i class="fas fa-terminal"></i> ENCRYPTED_CHANNEL // COMM_01</span>
+                </div>
+                <div id="chatMessages" class="terminal-body">
+                    <div class="msg system">[AUTH]: Secure connection established.</div>
+                    <div class="msg system">[INFO]: Awaiting peer messages...</div>
+                </div>
+                <div class="terminal-input">
+                    <input type="text" id="chatInput" placeholder="Enter message code...">
+                    <button id="sendBtn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../global.js"></script>
+    <script src="buddies-logic.js"></script>
+</body>
+</html>

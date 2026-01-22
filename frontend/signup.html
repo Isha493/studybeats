@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBeats | Sign Up</title>
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+
+    <div class="background-elements">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-box">
+            <h1 class="logo">Study<span>Beats</span></h1>
+            <p class="tagline">Create your account to start focusing.</p>
+
+            <form id="signupForm">
+                <div class="input-group">
+                    <input type="text" id="regUsername" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="regEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPassword" placeholder="Create Password" required>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-signup-action">Create Account</button>
+                    <button type="button" class="btn btn-back" onclick="window.location.href='login.html'">Back to Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="global.js"></script>
+    <script src="signup.js"></script>
+</body>
+</html>

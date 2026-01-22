@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://unpkg.com 'unsafe-eval' 'unsafe-inline';">
+    <title>My Library | StudyBeats</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="../profile.css">
+    <link rel="stylesheet" href="library.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="top-bar">
+        <div class="nav-content">
+            <h1 class="logo" onclick="location.href='../dashboard/dashboard.html'">Study<span>Beats</span></h1>
+            <div id="liveClock" class="clock">00:00:00</div>
+        </div>
+    </nav>
+
+    <main class="profile-container library-container">
+        <section>
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Study Materials</h2>
+                <label class="upload-btn">
+                    <i class="fas fa-plus"></i> Add File
+                    <input type="file" id="studyInput" hidden onchange="uploadFile('study-materials', this)">
+                </label>
+            </div>
+            <div id="studyGrid" class="file-grid"></div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2><i class="fas fa-music"></i> Personal Tracks</h2>
+                <label class="upload-btn">
+                    <i class="fas fa-plus"></i> Add Music
+                    <input type="file" id="musicInput" accept="audio/*" hidden onchange="uploadFile('user-music', this)">
+                </label>
+            </div>
+            <div id="musicGrid" class="file-grid"></div>
+        </section>
+    </main>
+
+    <div id="cornerTimer" class="corner-timer">00:00</div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../global.js"></script>
+    <script src="library-script.js"></script>
+</body>
+</html>

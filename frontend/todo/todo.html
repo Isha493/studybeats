@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tasks - StudyBeats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="todo-style.css">
+</head>
+<body>
+
+    <div class="main-layout">
+        <aside class="note-container-group">
+            <div class="sticky-note" id="stickyNote">
+                <div class="note-header"><span>Quick Note</span><div class="pin"></div></div>
+                <textarea id="stickyTextArea" placeholder="Jot down..."></textarea>
+                <div class="color-palette">
+                    <button class="color-dot yellow" onclick="changeNoteColor(1, '#f1c40f')"></button>
+                    <button class="color-dot blue" onclick="changeNoteColor(1, '#74b9ff')"></button>
+                    <button class="color-dot green" onclick="changeNoteColor(1, '#55efc4')"></button>
+                </div>
+            </div>
+            <div class="sticky-note second-note" id="stickyNote2">
+                <div class="note-header"><span>Ideas</span><div class="pin pink-pin"></div></div>
+                <textarea id="stickyTextArea2" placeholder="Plan..."></textarea>
+                <div class="color-palette">
+                    <button class="color-dot pastel-pink" onclick="changeNoteColor(2, '#ffb7c5')"></button>
+                    <button class="color-dot baby-pink" onclick="changeNoteColor(2, '#f4c2c2')"></button>
+                    <button class="color-dot white-note" onclick="changeNoteColor(2, '#ffffff')"></button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="todo-wrapper">
+            <header class="todo-header">
+                <div class="header-main">
+                    <div><h1>Study Tasks</h1><p>What are we conquering today?</p></div>
+                    <div class="stat-box"><span class="stat-label">All-Time Wins</span><span id="totalWins" class="stat-value">0</span></div>
+                </div>
+            </header>
+
+            <div class="input-section">
+                <input type="text" id="todoInput" placeholder="Enter a new task...">
+                <button id="addBtn">Add Task</button>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-header"><span>Today's Progress</span><span id="progressText">0%</span></div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+            </div>
+
+            <section class="active-section"><h3>Active Sessions</h3><ul id="activeList"></ul></section>
+            
+            <hr class="divider">
+            
+            <section class="report-section">
+                <h3>Accomplishment Report</h3>
+                <div id="reportArchive"></div>
+                <div class="archive-actions">
+                    <button onclick="clearReport()" class="clear-report-btn">Clear Report History</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="liveClock" class="clock-container">00:00:00</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="todo-script.js"></script>
+</body>
+</html>

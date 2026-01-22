@@ -1,0 +1,40 @@
+/* --- Logout Button Styling --- */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-logout {
+    background: rgba(255, 46, 99, 0.05); /* Transparent dark base */
+    color: #ff2e63; /* High-contrast Neon */
+    border: 1px solid #ff2e63;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px; /* Matching your nav-btn style */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Futuristic Glow */
+    box-shadow: 0 0 8px rgba(255, 46, 99, 0.2);
+    text-shadow: 0 0 5px rgba(255, 46, 99, 0.4);
+}
+
+/* Hover Effects */
+.btn-logout:hover {
+    background: #ff2e63;
+    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 46, 99, 0.5), 
+                0 0 30px rgba(255, 46, 99, 0.2);
+    text-shadow: none;
+}
+
+/* Tactile Click */
+.btn-logout:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}

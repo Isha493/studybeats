@@ -1,0 +1,179 @@
+/* --- LIBRARY LAYOUT --- */
+.library-container {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding-bottom: 120px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.5px;
+}
+
+.section-header h2 i {
+    color: #1db954;
+}
+
+/* --- GRID SYSTEM --- */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+/* --- ITEM CARDS --- */
+.item-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative; /* Essential for the tiny button placement */
+}
+
+.item-card:hover {
+    background: rgba(29, 185, 84, 0.08);
+    border-color: #1db954;
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* --- THE TINY GREEN CROSS (FIXED) --- */
+.delete-item-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    
+    /* Forced tiny dimensions */
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    
+    background: #1db954 !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    
+    /* Perfect centering */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    cursor: pointer !important;
+    opacity: 0; /* Hidden until hover */
+    transition: all 0.2s ease;
+    z-index: 99;
+}
+
+/* Force the icon inside to be microscopic */
+.delete-item-btn i {
+    font-size: 8px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.item-card:hover .delete-item-btn {
+    opacity: 1; /* Revealed on hover */
+}
+
+.delete-item-btn:hover {
+    background: #1ed760 !important;
+    transform: scale(1.1);
+}
+
+/* Main icons for Play/PDF */
+.item-card i:not(.fa-times) {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #1db954;
+    transition: 0.3s;
+}
+
+.item-card:hover i:not(.fa-times) {
+    transform: scale(1.1);
+    color: #1ed760;
+}
+
+.item-card p {
+    font-size: 0.85rem;
+    color: #b3b3b3;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+/* --- UPLOAD BUTTONS --- */
+.upload-btn {
+    background: #282828;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-btn:hover {
+    background: #fff;
+    color: #000;
+    transform: scale(1.05);
+}
+
+/* --- CORNER TIMER --- */
+.corner-timer {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: #1db954;
+    color: #000;
+    padding: 18px 28px;
+    border-radius: 100px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 15px 40px rgba(29, 185, 84, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+}
+
+/* --- ANIMATIONS & SCROLLBAR --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #121212; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #1db954; }

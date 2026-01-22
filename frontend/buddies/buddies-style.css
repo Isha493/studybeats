@@ -1,0 +1,353 @@
+:root {
+    --neon: #1db954;
+    --dark-bg: #050505;
+    --panel-bg: #0d0d0d;
+    --border: #1a1a1a;
+    --text-dim: #555;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: white;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --- NAVIGATION FIXES --- */
+.glass-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    height: 70px;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: fixed;
+    top: 0; width: 100%; z-index: 1000;
+    box-sizing: border-box;
+}
+
+.nav-content-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left { display: flex; align-items: center; gap: 20px; }
+.logo { font-size: 1.2rem; font-weight: 900; cursor: pointer; letter-spacing: -1px; }
+.logo span { color: var(--neon); text-shadow: 0 0 10px rgba(29, 185, 84, 0.3); }
+
+.separator { width: 1px; height: 20px; background: var(--border); }
+
+.network-status {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim);
+}
+
+.pulse-dot {
+    width: 6px; height: 6px; background: var(--neon); border-radius: 50%;
+    box-shadow: 0 0 8px var(--neon); animation: pulse 2s infinite;
+}
+
+/* --- STATUS PILL --- */
+.status-pill {
+    background: rgba(29, 185, 84, 0.03);
+    border: 1px solid rgba(29, 185, 84, 0.15);
+    padding: 6px 16px;
+    border-radius: 100px;
+    display: flex; align-items: center; gap: 10px;
+    color: var(--neon); font-size: 0.7rem; font-weight: 800;
+}
+
+.pill-label { color: var(--text-dim); font-size: 0.55rem; font-weight: 400; }
+
+/* --- NETWORK CONTAINER --- */
+.network-container {
+    max-width: 1100px;
+    margin: 110px auto 40px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.action-bar { display: flex; gap: 15px; margin-bottom: 30px; }
+
+.search-wrapper {
+    flex: 1; background: var(--panel-bg); border: 1px solid var(--border);
+    border-radius: 12px; display: flex; align-items: center; padding: 0 15px; color: var(--text-dim);
+}
+
+.search-wrapper input {
+    background: transparent; border: none; color: white; padding: 14px; width: 100%; outline: none;
+}
+
+.neon-btn {
+    background: transparent; border: 1px solid var(--neon); color: var(--neon);
+    padding: 0 30px; border-radius: 12px; font-weight: 800; font-size: 0.7rem;
+    letter-spacing: 1px; cursor: pointer; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neon-btn:hover { background: var(--neon); color: black; box-shadow: 0 0 20px rgba(29, 185, 84, 0.3); }
+
+/* --- LAYOUT GRID --- */
+.workspace-layout { display: grid; grid-template-columns: 1fr 340px; gap: 30px; }
+.label-row { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 2px; }
+
+.buddy-tile {
+    background: var(--panel-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 25px; margin-bottom: 20px;
+}
+
+.empty-tile { text-align: center; color: var(--text-dim); font-size: 0.85rem; border-style: dashed; }
+
+/* --- TERMINAL CHAT --- */
+.chat-terminal {
+    background: var(--panel-bg); border: 1px solid var(--border);
+    border-radius: 16px; display: flex; flex-direction: column; height: 550px;
+}
+
+.terminal-header { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.6rem; color: var(--text-dim); letter-spacing: 1px; }
+.terminal-body { flex: 1; padding: 20px; font-family: 'Courier New', monospace; font-size: 0.85rem; overflow-y: auto; line-height: 1.5; }
+
+.msg.system { color: var(--neon); opacity: 0.5; margin-bottom: 10px; }
+
+.terminal-input { display: flex; padding: 15px; border-top: 1px solid var(--border); gap: 15px; }
+.terminal-input input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 0.9rem; }
+.terminal-input button { background: transparent; border: none; color: var(--neon); cursor: pointer; transition: 0.2s; }
+.terminal-input button:hover { transform: translateX(3px); }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.terminal-btn {
+    background: #1db954;
+    color: #000;
+    border: none;
+    padding: 2px 8px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 4px;
+}
+.terminal-btn:hover {
+    background: #fff;
+}
+.system-msg {
+    color: #1db954;
+}
+
+/* --- NETWORK HUB MOBILE RESPONSIVENESS --- */
+
+/* 1. Tablet/Small Laptop Adjustments */
+@media screen and (max-width: 1000px) {
+    .workspace-layout {
+        grid-template-columns: 1fr 300px; /* Narrow the chat a bit */
+        gap: 20px;
+    }
+}
+
+/* 2. Mobile Layout Shift (The "Stacking" Point) */
+@media screen and (max-width: 850px) {
+    .glass-nav {
+        padding: 0 15px;
+    }
+
+    /* Hide technical labels that clutter small screens */
+    .pill-label, .network-status span {
+        display: none;
+    }
+
+    .separator {
+        margin: 0 5px;
+    }
+
+    .network-container {
+        margin-top: 90px;
+        padding: 0 15px;
+    }
+
+    /* IMPORTANT: Stack the Feed and Terminal 
+    */
+    .workspace-layout {
+        grid-template-columns: 1fr; /* Stack vertically */
+        gap: 40px;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .neon-btn {
+        width: 100%;
+        padding: 15px;
+    }
+
+    /* Adjust the Chat Terminal height for mobile so it doesn't hide everything */
+    .chat-terminal {
+        height: 400px; 
+        order: 2; /* Put chat below the buddies list */
+    }
+
+    .feed-section {
+        order: 1;
+    }
+
+    .buddy-tile {
+        padding: 15px;
+    }
+
+    .user-meta h4 {
+        font-size: 0.9rem;
+    }
+}
+
+.tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.user-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.mini-avatar {
+    width: 35px;
+    height: 35px;
+    background: var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+}
+
+/* 3. Small Phone Refinements */
+@media screen and (max-width: 480px) {
+    .logo {
+        font-size: 1rem;
+    }
+
+    .status-pill {
+        padding: 5px 10px;
+        font-size: 0.6rem;
+    }
+
+    .terminal-body {
+        font-size: 0.75rem; /* Make terminal text smaller on tiny screens */
+        padding: 15px;
+    }
+
+    /* Make buddy tiles more compact */
+    .buddy-tile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .tile-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .glass-nav, .top-bar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    /* Make the logo feel like a back button */
+    .logo {
+        font-size: 1rem;
+        background: rgba(255,255,255,0.05);
+        padding: 5px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo::before {
+        content: '← '; /* Adds a back arrow visually on mobile */
+        color: var(--neon);
+    }
+}
+
+/* --- 📱 COLLISION-PROOF NETWORK NAVIGATION --- */
+
+@media screen and (max-width: 850px) {
+    /* 1. Create a "Safe Zone" for the hamburger icon on the left */
+    .glass-nav {
+        padding: 0 15px 0 80px !important; /* 80px pushes the logo right */
+        justify-content: flex-start; /* Ensure logo stays near the left gap */
+    }
+
+    .nav-content-wrapper {
+        justify-content: space-between;
+        max-width: 100%;
+    }
+
+    /* 2. Scale logo and hide technical clutter */
+    .logo {
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    .separator, 
+    .network-status span, 
+    .pill-label {
+        display: none !important; /* Remove text that crowds the logo */
+    }
+
+    .network-status {
+        gap: 0;
+    }
+
+    /* 3. Adjust spacing for the network container */
+    .network-container {
+        margin-top: 90px;
+        padding: 0 15px;
+    }
+
+    /* 4. Ensure the Search bar and Button are usable */
+    .action-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .neon-btn {
+        width: 100%;
+        height: 50px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    /* Tighten the gap for very small phones */
+    .glass-nav {
+        padding-left: 70px !important;
+    }
+
+    .status-pill {
+        padding: 4px 10px;
+        font-size: 0.6rem;
+    }
+
+    /* Force buddy tiles to be single-column and readable */
+    .buddy-tile {
+        padding: 15px;
+    }
+
+    .mini-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.6rem;
+    }
+}

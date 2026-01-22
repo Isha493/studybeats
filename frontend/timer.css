@@ -1,0 +1,122 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background-color: #121212; color: #fff; overflow: hidden; }
+
+.background-elements { position: fixed; inset: 0; z-index: -1; }
+.circle-1 { position: absolute; width: 600px; height: 600px; background: #1db954; border-radius: 50%; filter: blur(120px); opacity: 0.1; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+.top-bar { padding: 1.5rem 3rem; background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(20px); }
+.nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; cursor: pointer; }
+.logo span { color: #1db954; }
+
+.timer-container { height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; }
+.timer-card { text-align: center; }
+
+.timer-display { position: relative; width: 300px; height: 300px; margin: 0 auto 40px; }
+.time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.time-text h1 { font-size: 4rem; font-weight: 800; letter-spacing: -2px; }
+.time-text p { color: #888; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    stroke-linecap: round;
+}
+
+.timer-controls { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; }
+.ctrl-btn { padding: 15px 40px; border-radius: 50px; border: 1px solid #333; background: transparent; color: #fff; cursor: pointer; font-weight: 700; transition: 0.3s; }
+.main-btn { background: #1db954; color: #000; border: none; font-size: 1.1rem; }
+.main-btn:hover { background: #1ed760; transform: scale(1.05); }
+
+.duration-presets { display: flex; gap: 10px; justify-content: center; }
+.duration-presets button { background: #222; border: none; color: #666; padding: 8px 16px; border-radius: 10px; cursor: pointer; }
+.duration-presets button.active { color: #1db954; background: rgba(29, 185, 84, 0.1); }
+
+.clock {
+    color: #b3b3b3;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* --- 📱 COLLISION-PROOF & ALIGNED MOBILE HEADER --- */
+
+@media screen and (max-width: 768px) {
+    .top-bar {
+        /* Increased left padding to 85px to align with hamburger */
+        padding: 1rem 1.5rem 1rem 85px !important; 
+        display: flex;
+        align-items: center;
+        height: 70px; /* Fixed height helps vertical alignment */
+    }
+
+    .nav-content {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+        white-space: nowrap;
+        /* Ensures the text sits perfectly centered vertically */
+        line-height: 1; 
+        margin: 0;
+    }
+
+    .clock {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Timer Scaling for Mobile */
+    .timer-display {
+        width: 260px;
+        height: 260px;
+        margin-bottom: 30px;
+    }
+    
+    .progress-ring {
+        width: 260px;
+        height: 260px;
+    }
+    
+    /* Adjusting the SVG circle for the smaller container */
+    .progress-ring__circle, .progress-ring__circle-bg {
+        r: 120;
+        cx: 130;
+        cy: 130;
+    }
+
+    .time-text h1 {
+        font-size: 3.2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .top-bar {
+        /* Consistent padding for small phones */
+        padding-left: 80px !important;
+    }
+
+    .clock {
+        display: none; /* Hide clock to keep the logo as the main focus */
+    }
+
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .timer-controls {
+        gap: 15px;
+    }
+
+    .ctrl-btn {
+        padding: 12px 30px;
+        font-size: 0.85rem;
+    }
+}

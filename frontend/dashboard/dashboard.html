@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBeats | Command Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <header class="header">
+            <h1 id="welcomeText">Focus Dashboard</h1>
+            <div id="quoteDisplay" class="quote-text">"Small steps lead to big results."</div>
+        </header>
+
+        <div class="main-grid">
+            <div class="card level-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-medal"></i> Scholar Status</h3>
+                    <span class="level-badge">LVL <span id="userLevel">1</span></span>
+                </div>
+                <div class="xp-info">
+                    <span>XP: <span id="currentXP">0.0</span> / <span id="nextLevelXP">1</span> hrs</span>
+                    <span id="rankTitle">Novice</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill xp-bar" id="xpBar"></div>
+                </div>
+            </div>
+
+            <div class="card goal-card">
+                <div class="card-header">
+                    <h3>Daily Focus Goal</h3>
+                    <div class="goal-input-group">
+                        <input type="number" id="goalInput" min="1" max="24" value="4">
+                        <button id="setGoalBtn">Set</button>
+                    </div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill goal-bar" id="progressBar"></div>
+                </div>
+                <div class="goal-footer">
+                    <p class="stat-label">Progress: <span id="goalPercentage">0%</span></p>
+                    <p class="stat-label">Target: <span id="targetDisplay">4</span> hrs</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-stopwatch"></i> Period Focus</h3>
+                    <button id="resetFocusBtn" class="reset-small-btn">Reset</button>
+                </div>
+                <div class="big-stat" id="totalFocusTime">0h 0m</div>
+                <p class="stat-label">Since last reset</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-fire"></i> Day Streak</h3>
+                </div>
+                <div class="big-stat">🔥 <span id="streakCount">0</span></div>
+                <p class="stat-label">Consistency Score</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../global.js"></script>
+    <script src="dashboard-logic.js"></script>
+</body>
+</html>

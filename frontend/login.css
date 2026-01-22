@@ -9,24 +9,23 @@
 body {
     background-color: #121212;
     height: 100vh;
-    height: 100svh; /* Mobile height fix */
+    height: 100svh; /* Essential for mobile browser address bars */
     width: 100vw;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
     overflow: hidden;
     color: #ffffff;
-    position: fixed; /* Prevents body from moving */
+    position: relative; /* Anchor for the absolute login box */
 }
 
 /* Background Glow Elements */
 .background-elements {
-    position: absolute;
-    top: 0; left: 0;
+    position: fixed; /* Fixed ensures it stays behind even if viewport shifts */
+    top: 0; 
+    left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: 1;
     overflow: hidden; 
+    pointer-events: none; /* Allows clicks to pass through to inputs */
 }
 
 .circle {
@@ -52,12 +51,25 @@ body {
     right: 15%;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Login Box Animation & Centering */
+@keyframes fadeInCenter {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, -45%); /* Starts slightly lower */
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, -50%); /* Ends at dead center */
+    }
 }
 
 .login-box {
+    /* THE ULTIMATE CENTER FIX */
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+    
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -68,10 +80,11 @@ body {
     width: 90%;
     max-width: 420px;
     text-align: center;
-    animation: fadeIn 0.8s ease-out;
-    position: relative;
+    animation: fadeInCenter 0.8s ease-out forwards;
     z-index: 10;
 }
+
+
 
 .logo {
     font-size: 2.5rem;
@@ -174,7 +187,7 @@ input:focus {
 
 @media (max-width: 480px) {
     .login-box {
-        width: 90% !important;
+        width: 92% !important;
         padding: 40px 20px;
     }
 }

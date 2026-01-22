@@ -18,6 +18,7 @@ async function initNetwork() {
     
     // Initial Load
     await loadFriends(user.id);
+    await loadPendingRequests(user.id); // NEW: Checks for missed requests on login
     setupRealtimeChat();
     listenForIncomingRequests(user.id);
     listenForFriendshipChanges(user.id);
@@ -60,7 +61,35 @@ async function sendFriendRequest(targetId, targetName) {
     else addTerminalMsg(`[UPLINK]: Request sent to ${targetName}.`);
 }
 
-// --- 2. REALTIME LISTENERS ---
+// --- 2. THE FIX: LOAD PENDING ON LOGIN ---
+async function loadPendingRequests(myId) {
+    const { data: pending } = await _supabase
+        .from('friendships')
+        .select(`id, user_id, profiles:user_id ( username )`)
+        .eq('friend_id', myId)
+        .eq('status', 'pending');
+
+    if (pending) {
+        pending.forEach(req => {
+            renderRequest(req.id, req.profiles.username);
+        });
+    }
+}
+
+// Helper to show the request in the terminal
+function renderRequest(requestId, senderName) {
+    // Prevent duplicate messages if already on screen
+    if (document.getElementById(`req-${requestId}`)) return;
+
+    const div = document.createElement('div');
+    div.id = `req-${requestId}`;
+    div.className = 'msg system-msg';
+    div.innerHTML = `> [INCOMING]: ${senderName} wants to link. <button class="terminal-btn" onclick="acceptFriend('${requestId}', '${senderName}')">ACCEPT</button>`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// --- 3. REALTIME LISTENERS ---
 function listenForIncomingRequests(myId) {
     _supabase
         .channel('requests')
@@ -68,11 +97,7 @@ function listenForIncomingRequests(myId) {
         async (payload) => {
             const { data: sender } = await _supabase.from('profiles').select('username').eq('id', payload.new.user_id).single();
             const name = sender ? sender.username : "Unknown";
-            
-            const div = document.createElement('div');
-            div.className = 'msg system-msg';
-            div.innerHTML = `> [INCOMING]: ${name} wants to link. <button class="terminal-btn" onclick="acceptFriend('${payload.new.id}', '${name}')">ACCEPT</button>`;
-            chatMessages.appendChild(div);
+            renderRequest(payload.new.id, name);
         }).subscribe();
 }
 
@@ -81,14 +106,15 @@ function listenForFriendshipChanges(myId) {
         .channel('sync')
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'friendships' }, 
         (payload) => {
-            if (payload.new.status === 'accepted') {
+            // If someone accepted OUR request, refresh our list
+            if (payload.new.status === 'accepted' && (payload.new.user_id === myId || payload.new.friend_id === myId)) {
                 console.log("Sync detected! Refreshing list...");
                 loadFriends(myId);
             }
         }).subscribe();
 }
 
-// --- 3. THE FIX: ACCEPT & FORCE REFRESH ---
+// --- 4. ACCEPT & FORCE REFRESH ---
 window.acceptFriend = async (requestId, senderName) => {
     const { error } = await _supabase
         .from('friendships')
@@ -98,15 +124,19 @@ window.acceptFriend = async (requestId, senderName) => {
     if (error) {
         addTerminalMsg("ERR: Failed to sync.");
     } else {
+        // Remove the "Accept" message from terminal
+        const reqEl = document.getElementById(`req-${requestId}`);
+        if (reqEl) reqEl.remove();
+
         addTerminalMsg(`[SYSTEM]: Uplink with ${senderName} established.`);
         const { data: { user } } = await _supabase.auth.getUser();
         
-        // Manual backup refresh
-        setTimeout(() => loadFriends(user.id), 800);
+        // Refresh the buddies list UI
+        loadFriends(user.id);
     }
 };
 
-// --- 4. DATA LOADING ---
+// --- 5. DATA LOADING ---
 async function loadFriends(userId) {
     console.log("Fetching active uplinks...");
     const { data: relations } = await _supabase
@@ -140,7 +170,7 @@ async function loadFriends(userId) {
     }
 }
 
-// --- 5. CHAT ---
+// --- 6. CHAT ---
 function setupRealtimeChat() {
     _supabase.channel('chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, 
     async (payload) => {

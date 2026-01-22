@@ -7,11 +7,11 @@ body {
 body, html {
     margin: 0; padding: 0;
     height: 100%; width: 100%;
-    overflow: hidden; background: #000;
+    overflow: hidden; 
+    background: #000;
     font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-/* --- 1. THE TRIGGER (HAMBURGER) --- */
 .menu-trigger {
     position: fixed;
     top: 20px;
@@ -29,7 +29,6 @@ body, html {
     transition: opacity 0.3s ease;
 }
 
-/* --- 2. THE SIDEBAR --- */
 .sidebar {
     position: fixed;
     top: 0; left: 0;
@@ -53,14 +52,12 @@ body, html {
 }
 .sidebar-logo span { color: #1db954; }
 
-/* REVEAL LOGIC */
 .menu-trigger:hover + .sidebar,
 .sidebar:hover {
     transform: translateX(0);
     opacity: 1;
 }
 
-/* NAV ITEMS */
 .nav-links { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 15px; }
 
 .nav-item {
@@ -75,7 +72,6 @@ body, html {
 .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
 .nav-item i { width: 20px; text-align: center; }
 
-/* FOOTER */
 .sidebar-footer { padding: 20px 15px; border-top: 1px solid rgba(255,255,255,0.05); }
 .logout-btn {
     width: 100%; background: rgba(255, 77, 77, 0.1);
@@ -84,10 +80,20 @@ body, html {
 }
 
 /* MAIN CONTENT */
-.main-container { width: 100vw; height: 100vh; background: #000; overflow: hidden; }
-#mainIframe { width: 100%; height: 100%; border: none; }
+.main-container { 
+    width: 100vw; 
+    height: 100vh; 
+    background: #000; 
+    overflow: hidden; /* This locks the viewport */
+    position: relative;
+}
+#mainIframe { 
+    width: 100%; 
+    height: 100%; 
+    border: none; 
+    display: block;
+}
 
-/* --- FIXED MUSIC PLAYER UI --- */
 #musicBlock {
     position: fixed;
     bottom: 30px;
@@ -147,39 +153,17 @@ body, html {
     display: flex; align-items: center; justify-content: center;
 }
 
-/* --- MOBILE RESPONSIVENESS --- */
 @media screen and (max-width: 768px) {
-    .sidebar {
-        width: 80%; 
-        max-width: 300px;
-    }
-
+    .sidebar { width: 80%; max-width: 300px; }
     #musicBlock {
-        /* FIX: Center player on mobile within screen bounds */
         width: calc(100% - 30px); 
         left: 15px;
         right: 15px;
         bottom: 15px;
         padding: 10px;
     }
-
-    .main-container {
-        -webkit-overflow-scrolling: touch;
-    }
 }
 
-.sidebar.mobile-open {
-    transform: translateX(0) !important;
-    opacity: 1 !important;
-}
-
-#menuTrigger {
-    position: fixed;
-    top: 15px;
-    left: 8px;
-    z-index: 9999;
-}
-
-#sidebar {
-    z-index: 10000 !important;
-}
+.sidebar.mobile-open { transform: translateX(0) !important; opacity: 1 !important; }
+#menuTrigger { position: fixed; top: 15px; left: 8px; z-index: 9999; }
+#sidebar { z-index: 10000 !important; }

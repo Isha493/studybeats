@@ -35,7 +35,7 @@ connectToCloud();
 
 /**
  * 2. UPDATED SECURITY CHECK
- * Prevents redirect loops on Login and Signup pages
+ * Prevents redirect loops and handles Vercel root paths
  */
 (function checkAuth() {
     const authCheck = async () => {
@@ -46,16 +46,23 @@ connectToCloud();
 
         const { data: { session } } = await supabaseClient.auth.getSession();
         
-        // Get current filename (e.g., 'signup.html')
+        // Get current filename and full path
         const path = window.location.pathname;
         const currentPage = path.split("/").pop();
 
         // Whitelist pages that DON'T need a login
-        const isAuthPage = currentPage === 'login.html' || currentPage === 'signup.html' || currentPage === 'index.html' || currentPage === '';
+        // Added path === '/' to correctly identify the home page on Vercel
+        const isAuthPage = 
+            currentPage === 'login.html' || 
+            currentPage === 'signup.html' || 
+            currentPage === 'index.html' || 
+            currentPage === '' || 
+            path === '/';
 
         if (!session && !isAuthPage) {
             console.log("No active session found. Protecting page...");
-            window.location.href = 'login.html';
+            // Use absolute path '/login.html' so it works from subfolders like /timer or /todo
+            window.location.href = '/login.html';
         }
     };
     authCheck();

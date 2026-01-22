@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/appmusic/index.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/profile", "destination": "/profile.html" }
+  ]
+}

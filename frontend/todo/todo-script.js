@@ -17,7 +17,11 @@ const noteBox1 = document.getElementById('stickyNote');
 const noteBox2 = document.getElementById('stickyNote2');
 
 async function loadNotes() {
-    const { data } = await supabaseClient.from('sticky_notes').select('*');
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabaseClient.from('sticky_notes').select('*').eq('user_id', user.id);
+    
     if (data) {
         data.forEach(note => {
             if (note.note_id === 1) {
@@ -32,16 +36,26 @@ async function loadNotes() {
 }
 
 async function saveNoteContent(id, text) {
-    await supabaseClient.from('sticky_notes').upsert({ note_id: id, content: text }, { onConflict: 'note_id' });
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+    await supabaseClient.from('sticky_notes').upsert(
+        { note_id: id, content: text, user_id: user.id }, 
+        { onConflict: 'note_id, user_id' } 
+    );
 }
 
 note1.oninput = () => saveNoteContent(1, note1.value);
 note2.oninput = () => saveNoteContent(2, note2.value);
 
 async function changeNoteColor(noteNum, color) {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
     const box = noteNum === 1 ? noteBox1 : noteBox2;
     box.style.background = color;
-    await supabaseClient.from('sticky_notes').upsert({ note_id: noteNum, bg_color: color }, { onConflict: 'note_id' });
+    await supabaseClient.from('sticky_notes').upsert(
+        { note_id: noteNum, bg_color: color, user_id: user.id }, 
+        { onConflict: 'note_id, user_id' }
+    );
 }
 
 // --- 2. STATS & PROGRESS ---
@@ -67,12 +81,37 @@ function updateProgressBar() {
     }
 }
 
-// --- 3. TASKS ---
+// --- 3. TASKS (LOADS BOTH ACTIVE & COMPLETED) ---
 async function loadTasks() {
-    const { data } = await supabaseClient.from('tasks').select('*').eq('is_completed', false).order('created_at', { ascending: true });
-    if (data) {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    // Fetch Active
+    const { data: active } = await supabaseClient.from('tasks')
+        .select('*')
+        .eq('user_id', user.id) 
+        .eq('is_completed', false)
+        .order('created_at', { ascending: true });
+
+    // Fetch Completed (History)
+    const { data: completed } = await supabaseClient.from('tasks')
+        .select('*')
+        .eq('user_id', user.id) 
+        .eq('is_completed', true)
+        .order('created_at', { ascending: false });
+
+    if (active) {
         activeList.innerHTML = '';
-        data.forEach(task => addTaskToUI(task.task_text, task.id));
+        active.forEach(task => addTaskToUI(task.task_text, task.id));
+    }
+
+    if (completed) {
+        reportArchive.innerHTML = '';
+        completed.forEach(task => {
+            const dateStr = new Date(task.created_at).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const timeStr = new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            addCompletedTaskToUI(task.task_text, dateStr, timeStr);
+        });
     }
     updateProgressBar();
 }
@@ -80,7 +119,12 @@ async function loadTasks() {
 addBtn.onclick = async () => {
     const text = todoInput.value.trim();
     if (text === "") return;
-    const { data, error } = await supabaseClient.from('tasks').insert([{ task_text: text, is_completed: false }]).select();
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    const { data, error } = await supabaseClient.from('tasks').insert([
+        { task_text: text, is_completed: false, user_id: user.id }
+    ]).select();
+
     if (!error && data) {
         addTaskToUI(data[0].task_text, data[0].id);
         todoInput.value = "";
@@ -96,29 +140,22 @@ function addTaskToUI(text, id) {
 }
 
 async function completeTask(btn) {
+    const { data: { user } } = await supabaseClient.auth.getUser();
     const taskLi = btn.parentElement;
     const taskId = taskLi.dataset.id;
     const taskText = taskLi.querySelector('span').innerText;
 
-    const { error } = await supabaseClient.from('tasks').update({ is_completed: true }).eq('id', taskId);
+    const { error } = await supabaseClient.from('tasks')
+        .update({ is_completed: true })
+        .eq('id', taskId)
+        .eq('user_id', user.id); 
 
     if (!error) {
         const now = new Date();
         const dateString = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        let dateGroup = document.getElementById(dateString);
-        if (!dateGroup) {
-            dateGroup = document.createElement('div');
-            dateGroup.id = dateString;
-            dateGroup.innerHTML = `<div class="date-header">${dateString}</div><div class="items-container"></div>`;
-            reportArchive.prepend(dateGroup);
-        }
-
-        const item = document.createElement('div');
-        item.className = 'report-item';
-        item.innerHTML = `<span>${taskText}</span><span class="report-time">${timeString}</span>`;
-        dateGroup.querySelector('.items-container').appendChild(item);
+        addCompletedTaskToUI(taskText, dateString, timeString);
         taskLi.remove();
 
         totalWinsCount++;
@@ -128,7 +165,34 @@ async function completeTask(btn) {
     }
 }
 
-function clearReport() { if (confirm("Clear history?")) { reportArchive.innerHTML = ""; updateProgressBar(); } }
+// Separate UI helper for the Accomplishment Report
+function addCompletedTaskToUI(text, dateStr, timeStr) {
+    let dateGroup = document.getElementById(dateStr);
+    if (!dateGroup) {
+        dateGroup = document.createElement('div');
+        dateGroup.id = dateStr;
+        dateGroup.innerHTML = `<div class="date-header">${dateStr}</div><div class="items-container"></div>`;
+        reportArchive.prepend(dateGroup);
+    }
+
+    const item = document.createElement('div');
+    item.className = 'report-item';
+    item.innerHTML = `<span>${text}</span><span class="report-time">${timeStr}</span>`;
+    dateGroup.querySelector('.items-container').appendChild(item);
+}
+
+async function clearReport() { 
+    if (confirm("Clear history? This will remove all records from the database.")) { 
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { error } = await supabaseClient.from('tasks').delete().eq('user_id', user.id).eq('is_completed', true);
+        
+        if (!error) {
+            reportArchive.innerHTML = ""; 
+            updateProgressBar(); 
+        }
+    } 
+}
+
 todoInput.onkeypress = (e) => { if (e.key === "Enter") addBtn.click(); };
 
 // --- 4. CLOCK ---

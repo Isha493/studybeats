@@ -1,6 +1,7 @@
 const quotes = [
     "\"Focus on being productive instead of busy.\"",
     "\"The secret of getting ahead is getting started.\"",
+    "\"The secret of getting ahead is getting started.\"",
     "\"Done is better than perfect.\"",
     "\"Your future self will thank you for today's work.\""
 ];
@@ -26,11 +27,17 @@ async function initDashboard() {
 }
 
 async function loadStats(user, goalHours) {
-    const { data: sessions } = await _supabase.from('study_sessions').select('*').eq('user_id', user.id);
-    if (!sessions) return;
+    // UPDATED: Fetching both tables so streak is accurate
+    const [sessionRes, taskRes] = await Promise.all([
+        _supabase.from('study_sessions').select('*').eq('user_id', user.id),
+        _supabase.from('tasks').select('created_at').eq('user_id', user.id).eq('is_completed', true)
+    ]);
 
-    // --- 1. XP & LEVEL CALCULATION ---
-    const totalSecs = sessions.reduce((acc, s) => acc + Number(s.duration || 0), 0);
+    const sessions = sessionRes.data || [];
+    const tasks = taskRes.data || [];
+
+    // --- 1. XP & LEVEL CALCULATION (Original Logic) ---
+    const totalSecs = sessions.reduce((acc, s) => acc + Number(s.duration || s.seconds_total || 0), 0);
     const totalHrs = totalSecs / 3600;
     
     const currentLevel = Math.floor(Math.sqrt(totalHrs)) + 1;
@@ -47,28 +54,50 @@ async function loadStats(user, goalHours) {
     document.getElementById('rankTitle').textContent = ranks[Math.min(currentLevel - 1, ranks.length - 1)];
     document.getElementById('xpBar').style.width = Math.max(2, Math.min(xpPercent, 100)) + "%";
 
-    // --- 2. DAILY GOAL PROGRESS ---
-    const today = new Date().toDateString();
-    const todaySecs = sessions.filter(s => new Date(s.created_at).toDateString() === today)
-                              .reduce((acc, s) => acc + Number(s.duration || 0), 0);
+    // --- 2. DAILY GOAL PROGRESS (Original Logic) ---
+    const todayStr = new Date().toDateString();
+    const todaySecs = sessions.filter(s => new Date(s.created_at).toDateString() === todayStr)
+                             .reduce((acc, s) => acc + Number(s.duration || s.seconds_total || 0), 0);
     
-    // Critical Math: Use the passed goalHours
     const goalPercent = Math.min((todaySecs / (goalHours * 3600)) * 100, 100);
     document.getElementById('progressBar').style.width = goalPercent + "%";
     document.getElementById('goalPercentage').textContent = Math.round(goalPercent) + "%";
 
-    // --- 3. PERIOD FOCUS ---
+    // --- 3. PERIOD FOCUS (Original Logic) ---
     const lastReset = user.user_metadata?.focus_reset_at || new Date(0).toISOString();
     const periodSecs = sessions.filter(s => new Date(s.created_at) >= new Date(lastReset))
-                               .reduce((acc, s) => acc + Number(s.duration || 0), 0);
+                               .reduce((acc, s) => acc + Number(s.duration || s.seconds_total || 0), 0);
     document.getElementById('totalFocusTime').textContent = `${Math.floor(periodSecs/3600)}h ${Math.floor((periodSecs%3600)/60)}m`;
 
-    // --- 4. STREAK ---
-    const dates = [...new Set(sessions.map(s => new Date(s.created_at).toDateString()))].sort((a,b) => new Date(b)-new Date(a));
-    document.getElementById('streakCount').textContent = dates.length > 0 ? (Math.floor((new Date()-new Date(dates[0]))/86400000) <= 1 ? dates.length : 0) : 0;
+    // --- 4. UNIFIED STREAK (The Fix) ---
+    const combinedDates = [
+        ...sessions.map(s => new Date(s.created_at).toDateString()),
+        ...tasks.map(t => new Date(t.created_at).toDateString())
+    ];
+    
+    const uniqueDates = [...new Set(combinedDates)].map(d => new Date(d));
+    uniqueDates.sort((a, b) => b - a);
+
+    let streak = 0;
+    if (uniqueDates.length > 0) {
+        let today = new Date().toDateString();
+        let lastDate = uniqueDates[0].toDateString();
+        const dayDiff = Math.floor((new Date(today) - new Date(lastDate)) / 86400000);
+
+        if (dayDiff <= 1) {
+            streak = 1;
+            for (let i = 0; i < uniqueDates.length - 1; i++) {
+                const diff = Math.floor((uniqueDates[i] - uniqueDates[i+1]) / 86400000);
+                if (diff === 1) streak++;
+                else if (diff === 0) continue;
+                else break;
+            }
+        }
+    }
+    document.getElementById('streakCount').textContent = streak;
 }
 
-// --- GOAL SETTER (THE FIX) ---
+// --- GOAL SETTER ---
 document.getElementById('setGoalBtn').onclick = async () => {
     const val = parseInt(document.getElementById('goalInput').value);
     
@@ -85,7 +114,7 @@ document.getElementById('setGoalBtn').onclick = async () => {
     });
 
     if (!error) {
-        location.reload(); // Refresh to recalculate bars with new goal
+        location.reload(); 
     } else {
         alert("Error: " + error.message);
         btn.textContent = "Set";

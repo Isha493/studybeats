@@ -1,3 +1,4 @@
+// --- 0. SUPABASE CONFIG ---
 const SB_URL = 'https://trafswsijeyryikiopht.supabase.co'; 
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyYWZzd3NpamV5cnlpa2lvcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0NjQwMTksImV4cCI6MjA4NDA0MDAxOX0.ScXfZe1P7bNIL8YYLE_JRLZPuoq48U7lVnkrGfGiE6Q';
 const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
@@ -11,6 +12,7 @@ const clockElement = document.getElementById('liveClock');
 
 let timers = {}; 
 
+// --- 1. STICKY NOTES LOGIC ---
 const note1 = document.getElementById('stickyTextArea');
 const note2 = document.getElementById('stickyTextArea2');
 const noteBox1 = document.getElementById('stickyNote');
@@ -50,6 +52,7 @@ async function changeNoteColor(noteNum, color) {
     await supabaseClient.from('sticky_notes').upsert({ note_id: noteNum, bg_color: color, user_id: user.id }, { onConflict: 'note_id, user_id' });
 }
 
+// --- 2. STATS & PROGRESS ---
 let totalWinsCount = parseInt(localStorage.getItem('totalWins')) || 0;
 totalWinsDisplay.innerText = totalWinsCount;
 
@@ -64,15 +67,24 @@ function updateProgressBar() {
     document.getElementById('progressText').innerText = percentage + "%";
 }
 
+// --- 3. TASK & TIMER LOGIC ---
 async function loadTasks() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
+
     const { data: active } = await supabaseClient.from('tasks').select('*').eq('user_id', user.id).eq('is_completed', false).order('created_at', { ascending: true });
     const { data: history } = await supabaseClient.from('tasks').select('*').eq('user_id', user.id).neq('is_completed', false).order('created_at', { ascending: false }).limit(20);
+
     if (active) {
         activeList.innerHTML = '';
-        active.forEach(task => addTaskToUI(task.task_text, task.id));
+        active.forEach(task => {
+            addTaskToUI(task.task_text, task.id);
+            // Restore running state if it exists in localStorage
+            const savedStart = localStorage.getItem(`timer_start_${task.id}`);
+            if (savedStart) resumeTimer(task.id, parseInt(savedStart));
+        });
     }
+
     if (history) {
         reportArchive.innerHTML = '';
         history.forEach(task => {
@@ -98,7 +110,7 @@ function addTaskToUI(text, id) {
     li.innerHTML = `
         <span class="task-name">${text}</span>
         <div class="task-timer-container" id="actions-${id}">
-            <span class="task-timer" id="timer-${id}">00:00</span>
+            <span class="task-timer" id="timer-${id}" data-total-seconds="0">00:00</span>
             <button class="action-icon play-icon" onclick="toggleTimer('${id}')">▶</button>
             <button class="action-icon stop-icon" onclick="toggleTimer('${id}')">⏹</button>
         </div>
@@ -110,22 +122,64 @@ function addTaskToUI(text, id) {
     activeList.appendChild(li);
 }
 
+function formatTime(totalSeconds) {
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const s = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
 function toggleTimer(id) {
     const group = document.getElementById(`actions-${id}`);
     const display = document.getElementById(`timer-${id}`);
+
     if (timers[id]) {
+        // --- STOPPING / PAUSING ---
         clearInterval(timers[id].interval);
-        saveTime(timers[id].seconds);
+        const chunkSeconds = Math.floor((Date.now() - timers[id].startTime) / 1000);
+        
+        saveTime(chunkSeconds); // Log this chunk to Supabase
+
+        const currentTotal = parseInt(display.dataset.totalSeconds || 0);
+        const newTotal = currentTotal + chunkSeconds;
+        
+        display.dataset.totalSeconds = newTotal;
+        display.innerText = formatTime(newTotal);
+
         delete timers[id];
+        localStorage.removeItem(`timer_start_${id}`);
         group.classList.remove('is-running');
     } else {
+        // --- STARTING / RESUMING ---
+        const startTime = Date.now();
+        const currentTotal = parseInt(display.dataset.totalSeconds || 0);
+        
         group.classList.add('is-running');
-        timers[id] = { seconds: 0, interval: setInterval(() => {
-            timers[id].seconds++;
-            const m = Math.floor(timers[id].seconds / 60).toString().padStart(2, '0');
-            const s = (timers[id].seconds % 60).toString().padStart(2, '0');
-            display.innerText = `${m}:${s}`;
-        }, 1000)};
+        localStorage.setItem(`timer_start_${id}`, startTime);
+        
+        timers[id] = {
+            startTime: startTime,
+            interval: setInterval(() => {
+                const elapsedSinceStart = Math.floor((Date.now() - startTime) / 1000);
+                display.innerText = formatTime(currentTotal + elapsedSinceStart);
+            }, 1000)
+        };
+    }
+}
+
+function resumeTimer(id, startTime) {
+    const group = document.getElementById(`actions-${id}`);
+    if (group) {
+        group.classList.add('is-running');
+        const display = document.getElementById(`timer-${id}`);
+        const currentTotal = parseInt(display.dataset.totalSeconds || 0);
+        
+        timers[id] = {
+            startTime: startTime,
+            interval: setInterval(() => {
+                const elapsedSinceStart = Math.floor((Date.now() - startTime) / 1000);
+                display.innerText = formatTime(currentTotal + elapsedSinceStart);
+            }, 1000)
+        };
     }
 }
 
@@ -142,8 +196,12 @@ async function completeTask(btn, isDone) {
     const li = btn.closest('li');
     const id = li.dataset.id;
     const txt = li.querySelector('.task-name').innerText;
+    
+    // If timer is running, stop it and save the last chunk before completing
     if (timers[id]) toggleTimer(id);
+
     const { error } = await supabaseClient.from('tasks').update({ is_completed: isDone }).eq('id', id).eq('user_id', user.id);
+
     if (!error) {
         const now = new Date();
         addCompletedTaskToUI(txt, now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isDone);
@@ -171,6 +229,7 @@ function addCompletedTaskToUI(text, dateStr, timeStr, isDone) {
     group.querySelector('.items-container').appendChild(item);
 }
 
+// --- CORE HANDLERS ---
 addBtn.onclick = async () => {
     const text = todoInput.value.trim();
     if (!text) return;

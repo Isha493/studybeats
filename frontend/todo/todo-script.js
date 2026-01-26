@@ -72,14 +72,26 @@ async function loadTasks() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
 
-    const { data: active } = await supabaseClient.from('tasks').select('*').eq('user_id', user.id).eq('is_completed', false).order('created_at', { ascending: true });
-    const { data: history } = await supabaseClient.from('tasks').select('*').eq('user_id', user.id).neq('is_completed', false).order('created_at', { ascending: false }).limit(20);
+    // FIX: Only pull tasks where is_completed is NULL (not yet decided)
+    const { data: active } = await supabaseClient
+        .from('tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .is('is_completed', null) 
+        .order('created_at', { ascending: true });
+
+    const { data: history } = await supabaseClient
+        .from('tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .not('is_completed', 'is', null) // Pull anything that is NOT null (true or false)
+        .order('created_at', { ascending: false })
+        .limit(20);
 
     if (active) {
         activeList.innerHTML = '';
         active.forEach(task => {
             addTaskToUI(task.task_text, task.id);
-            // Restore running state if it exists in localStorage
             const savedStart = localStorage.getItem(`timer_start_${task.id}`);
             if (savedStart) resumeTimer(task.id, parseInt(savedStart));
         });
@@ -133,11 +145,9 @@ function toggleTimer(id) {
     const display = document.getElementById(`timer-${id}`);
 
     if (timers[id]) {
-        // --- STOPPING / PAUSING ---
         clearInterval(timers[id].interval);
         const chunkSeconds = Math.floor((Date.now() - timers[id].startTime) / 1000);
-        
-        saveTime(chunkSeconds); // Log this chunk to Supabase
+        saveTime(chunkSeconds); 
 
         const currentTotal = parseInt(display.dataset.totalSeconds || 0);
         const newTotal = currentTotal + chunkSeconds;
@@ -149,7 +159,6 @@ function toggleTimer(id) {
         localStorage.removeItem(`timer_start_${id}`);
         group.classList.remove('is-running');
     } else {
-        // --- STARTING / RESUMING ---
         const startTime = Date.now();
         const currentTotal = parseInt(display.dataset.totalSeconds || 0);
         
@@ -197,10 +206,13 @@ async function completeTask(btn, isDone) {
     const id = li.dataset.id;
     const txt = li.querySelector('.task-name').innerText;
     
-    // If timer is running, stop it and save the last chunk before completing
     if (timers[id]) toggleTimer(id);
 
-    const { error } = await supabaseClient.from('tasks').update({ is_completed: isDone }).eq('id', id).eq('user_id', user.id);
+    const { error } = await supabaseClient
+        .from('tasks')
+        .update({ is_completed: isDone }) 
+        .eq('id', id)
+        .eq('user_id', user.id);
 
     if (!error) {
         const now = new Date();
@@ -234,7 +246,7 @@ addBtn.onclick = async () => {
     const text = todoInput.value.trim();
     if (!text) return;
     const { data: { user } } = await supabaseClient.auth.getUser();
-    const { data, error } = await supabaseClient.from('tasks').insert([{ task_text: text, is_completed: false, user_id: user.id }]).select();
+    const { data, error } = await supabaseClient.from('tasks').insert([{ task_text: text, is_completed: null, user_id: user.id }]).select();
     if (!error && data) {
         addTaskToUI(data[0].task_text, data[0].id);
         todoInput.value = "";
@@ -245,7 +257,7 @@ addBtn.onclick = async () => {
 async function clearReport() { 
     if (confirm("Clear history?")) { 
         const { data: { user } } = await supabaseClient.auth.getUser();
-        await supabaseClient.from('tasks').delete().eq('user_id', user.id).neq('is_completed', false);
+        await supabaseClient.from('tasks').delete().eq('user_id', user.id).not('is_completed', 'is', null);
         reportArchive.innerHTML = ""; 
         updateProgressBar(); 
     } 

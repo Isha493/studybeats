@@ -170,5 +170,19 @@ li {
     .task-timer-container { width: 100%; max-width: 250px; margin: 0 auto; }
     .task-actions { justify-content: space-evenly; width: 100%; border-top: 1px solid #222; padding-top: 15px; }
 
-    .clock-container { left: 50%; transform: translateX(-50%); width: max-content; }
+    /* Update this specific part inside your @media query */
+@media (max-width: 800px) {
+    /* ... (keep your other mobile styles) ... */
+
+    .clock-container { 
+        left: 50%; 
+        transform: translateX(-50%); 
+        width: max-content; 
+        bottom: 80px; /* Moved up to clear the mobile browser's bottom bar */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Added shadow to pop against background */
+        font-size: 1rem;
+        padding: 8px 15px;
+        z-index: 9999; /* Ensures it stays on top of everything */
+    }
+}
 }
